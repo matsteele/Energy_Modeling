@@ -1,13 +1,29 @@
 
+# starting the project up 
 
-cd into server
+1) cd into server
+```bash
 cd server
-run
-start virtual environment
+```
+2) start virtual environment
+```bash
 source venv/bin/activate
-pip3 install -r requirements.txt
+```
+3) install dependencies 
+```bash
+ pip3 install -r requirements.txt
+```
+4) start server
+```bash
 python main.py
+```
+
+5) start front-end
 cd into static
 webpack --watch
 also start Sass styling
 sass --watch style/style.scss:style/style.css
+
+
+# background
+

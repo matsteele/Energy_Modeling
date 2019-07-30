@@ -22,16 +22,20 @@ python main.py
 The weekday and weekend data were split on a 3d plane, with usage on the z axis and temperature on the x axis. This provided a clear sense of how the usage shifted with the seasons and weather. 
 
 The markers were colored based on how far above or below they were from the a predictionof energy usage based on the temperature for that day. The more orange the weekday data, the closer the usage was to what was expected. For weekend data, the greenger the market, the closer to what was expected. The redder the marker, the higher usage was than expected. The bluer the marker, the lower the usage for that day was, relative to expected. 
+<br>
 <img src="./resources/screenshots/3dScatterMainView.png" width="100%"/>
+<br>
 <img src="./resources/screenshots/3dScatterUpperView.png" width="200"/>
 
 
 ### click to toggle data sets from legend 
 To isolate data visuals, a user can toggle what is shown by clicking on the items in the legend.
+<br>
 <img src="./resources/screenshots/legend.png" width="200"/>
 
 ### hover to see daily usage, colored by temperature
 A below shart shows energy usage throughout each day the mouse is hovered over. The redder the color, the warmer the weather was for that half our interval. 
+<br>
 <img src="./resources/screenshots/hover.png" width="200"/>
 
 # sorting

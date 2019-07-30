@@ -9,9 +9,9 @@ import datetime as dt
 import plotly.graph_objs as go
 from make_features import DFFeatures
 
-dash_app = dash.Dash(__name__)
+app = dash.Dash(__name__)
 
-dash_app.title = "PD Challenge"
+app.title = "PD Challenge"
 
 # data wrangling
 df = pd.read_csv('PD_challange_data_set.csv')
@@ -203,7 +203,7 @@ main_chart_data = [
 ]
 
 
-dash_app.layout = html.Div(
+app.layout = html.Div(
     className='row background',
     style={"max-width": "100%", "font-size": "1.5rem", "font-family": "sans-serif",
            "padding": "0px 0px", 'backgroundColor': "#B8B8B8", "margin": 0},
@@ -321,11 +321,11 @@ def update_subgraph(hoverData):
     }, date_hovered
 
 
-@dash_app.callback([Output('sub-graph', 'figure'), Output('dateforsubgraph', 'children')],
+@app.callback([Output('sub-graph', 'figure'), Output('dateforsubgraph', 'children')],
                    [Input('main-graph', 'hoverData')])
 def update_subgraph_onHover(inputData):
     output1, output2 = update_subgraph(inputData)
     return output1, output2
 
 if __name__ == "__main__":
-    dash_app.run_server(debug=True)
+    app.run_server(debug=True)

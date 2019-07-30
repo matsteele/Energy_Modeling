@@ -1,5 +1,3 @@
-from flask import Flask, request, render_template, url_for
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html

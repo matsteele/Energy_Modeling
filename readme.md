@@ -12,8 +12,10 @@ source venv/bin/activate
 ```
 3) start server
 ```bash
-python main.py
+python app.py
 ```
+4) navigate to browser and input the link indicated in terminal
+
 
 
 # screenshots

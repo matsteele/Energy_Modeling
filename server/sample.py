@@ -58,7 +58,7 @@ app.layout = html.Div([
                             html.Button('Next', id='next', style={
                                         'display': 'inline-block'})
                         ],
-                        className='two columns offset-by-two'
+                        className='six columns offset-by-two'
                     ),
                     dcc.Markdown(
                         id='text',

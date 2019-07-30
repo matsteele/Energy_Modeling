@@ -1,18 +1,15 @@
-# from flask_assets import Bundle, Environment
-
 from flask import Flask, request, render_template, url_for
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Input, Output, State
 import pandas as pd
 import datetime as dt
 import plotly.graph_objs as go
-from make_features import DFFeatures 
+from make_features import DFFeatures
 
-# app = Flask(__name__, static_folder='../static/dist', template_folder='../templates')
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-dash_app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+dash_app = dash.Dash(__name__)
 
 # data wrangling
 df = pd.read_csv('PD_challange_data_set.csv')
@@ -20,148 +17,307 @@ df = pd.read_csv('PD_challange_data_set.csv')
 DataFeatures = DFFeatures(df)
 
 def build_weekday_scatter():
-    print(DataFeatures.weekday_DF_byTime.head())
-    df = DataFeatures.weekday_DF_byTime
+    # print(DataFeatures.weekday_DF.keys())
+    df = DataFeatures.weekday_DF
     return {
+        "name": "weekday total daily usage",
         "type": "scatter3d",
         "x": list(df.out_door_temp_mean_byDate),
         "y": list(df.just_date),
         "mode": 'markers',
         "z":  list(df.electricity_usage_sum_byDate),
-        "marker": dict(
-            color='red',
-            size=3,
-            cauto=True,
-            # colorscale=[[0, "rgb(230,245,254)"], [0.4, "rgb(123,171,203)"], [
-            #     0.8, "rgb(40,119,174)"], [1, "rgb(37,61,81)"]],
-        ),
+        "marker": {
+            "size": 3,
+            "color": list(-df.pred_diff),
+            "colorscale": [[0, "blue"],
+                           [0.5, "orange"],
+                           [1.0,  "red"]],
+            "showscale": True,
+            "colorbar": {
+                "outlinecolor": "lightgrey",
+                "title": {
+                    "text": "weekday usage<br>above or below<br>expected",
+                    "side": "top"
+                }
+            }
+        },
         "scene": "scene",
-        "opacity": .4,
-        "scene": "scene"
+        "opacity": .9,
+        "scene": "scene",
+        "customdata": df.just_date,
+    }
+
+
+def build_weekday_predictions():
+    df = DataFeatures.weekday_DF
+    return {
+        "name": "predicted values",
+        "type": "scatter3d",
+        "x": list(df.out_door_temp_mean_byDate),
+        "y": list(df.just_date),
+        "mode": 'lines',
+        "z":  list(df.predictions),
+        "marker": {
+            "color": 'orange',
+            "size": 3,
+        },
+        "scene": "scene",
+        "opacity": .5,
+        "scene": "scene",
+        "customdata": df.just_date,
     }
 
 
 def build_weekend_scatter():
-    df = DataFeatures.weekend_DF_byTime
+    df = DataFeatures.weekend_DF
     return {
+        "name": "weekend total daily usage",
         "type": "scatter3d",
         "x": list(df.out_door_temp_mean_byDate),
         "y": list(df.just_date),
         "mode": 'markers',
         "z":  list(df.electricity_usage_sum_byDate),
-        "marker": dict(
-            color='blue',
-            size=3,
-            cauto=True,
-            # colorscale=[[0, "rgb(230,245,254)"], [0.4, "rgb(123,171,203)"], [
-            #     0.8, "rgb(40,119,174)"], [1, "rgb(37,61,81)"]],
-        ),
+        "marker": {
+            "symbol": "diamond",
+            "size": 4,
+            "color": list(-df.pred_diff),
+            "colorscale": [[0, "blue"],
+                           [0.5, "green"],
+                           [1.0,  "red"]],
+            "showscale": True,
+            "colorbar": {
+                "xanchor": "right",
+                "outlinecolor": "lightgrey",
+                "title": {
+                    "text": "weekend usage<br>above or below<br>expected",
+                    "side": "top"
+                }
+            }
+        },
         "scene": "scene",
         "opacity": .4,
-        "scene": "scene"
+        "scene": "scene",
+        "customdata": df.just_date,
     }
 
 
-axis_template = {
-    "showbackground": True,
-    "backgroundcolor": "#141414",
-    "gridcolor": "rgb(255, 255, 255)",
-    "zerolinecolor": "rgb(255, 255, 255)",
-}
+def build_weekend_predictions():
+    df = DataFeatures.weekend_DF
+    return {
+        "name": "predicted values",
+        "type": "scatter3d",
+        "x": list(df.out_door_temp_mean_byDate),
+        "y": list(df.just_date),
+        "mode": 'lines',
+        "z":  list(df.predictions),
+        "marker": {
+            "color": 'green',
+            "size": 3,
+        },
+        "scene": "scene",
+        "opacity": .5,
+        "scene": "scene",
+        "customdata": df.just_date,
+    }
 
-plot_layout = dict(
-    title="electricity usage over time compared to temperature",
-    font={"size": 12, "color": "grey"},
+
+def build_week_scatter():
+    df = DataFeatures.base_week_data
+    return {
+        "name": "weekly average",
+        "type": "scatter3d",
+        "x": list(df.out_door_temp_mean_byWeek),
+        "y": list(df.monday_of_that_week),
+        "mode": 'lines',
+        "z":  list(df.electricity_usage_mean_byWeek),
+        "marker": {
+            "color": 'purple',
+            "size": 10,
+        },
+        "scene": "scene",
+        "opacity": .9,
+        "scene": "scene",
+        "customdata": df.monday_of_that_week,
+    }
+
+
+maxTemp = DataFeatures.base_day_data.out_door_temp_mean_byDate.max()
+maxUsage = DataFeatures.base_day_data.electricity_usage_sum_byDate.max()
+minUsage = DataFeatures.base_day_data.electricity_usage_sum_byDate.min()
+
+main_plot_layout = dict(
+    font={"size": 12, "color": "white", "family": "Courier New, monospace"},
     margin=dict(l=0, r=0, b=0, t=0),
-    plot_bgcolor="#141414",
+    plot_bgcolor="lightgrey",
+    paper_bgcolor="lightgrey",
+    hovermode='closest',
+    hoverlabel={
+        'namelength': 10
+    },
+    clickmode='event+select',
+    legend=dict(x=-.1, y=1.2),
     scene=dict(
         aspectmode="manual",
-        aspectratio=dict(x=2, y=5, z=1.5),
-    )
+        aspectratio=dict(x=2, y=5, z=2.5),
+        camera=dict(
+            up=dict(x=0, y=0, z=.5),
+            center=dict(x=-.5, y=.1, z=-1),
+            eye=dict(x=4, y=1.75, z=.5)
+        ),
+        xaxis=dict(
+            title="outdoor temp (in F)",
+            nticks=6, range=[
+                maxTemp*1.2, 0
+            ],
+            spikecolor="white",
+            gridcolor="#E6E6E6",
+            showbackground=False
+        ),
+        yaxis=dict(
+            nticks=20, title="",
+            spikecolor="white",
+            gridcolor="#E6E6E6",
+            showbackground=False
+        ),
+        zaxis=dict(
+            title="energy usage (in kW)",
+            nticks=7, range=[minUsage*.8,  maxUsage*1.2],
+            spikecolor="white",
+            gridcolor="#E6E6E6",
+            showbackground=False
+
+        )
+    ),
+
+
 )
 
-data = [
+
+main_chart_data = [
     build_weekday_scatter(),
-    build_weekend_scatter()
+    build_weekend_scatter(),
+    build_week_scatter(),
+    build_weekday_predictions(),
+    build_weekend_predictions()
 ]
 
 
-dash_app.layout = html.Div(children=[
-    html.Div([html.H1("ENERGY USAGE OVER TIME ")],
-             style={'textAlign': "center", "padding-bottom": "10", "padding-top": "10"}),
+dash_app.layout = html.Div(
+    className='row background',
+    style={"max-width": "100%", "font-size": "1.5rem", "font-family": "Courier New, monospace",
+           "padding": "0px 0px", 'backgroundColor': "lightgrey", "margin": 0},
+    children=[
+        html.Div([html.H2("ENERGY USAGE OVER TIME")],
+                 style={'backgroundColor': "grey", 'height': '10%', "color": "white", 'textAlign': "center", "padding-bottom": "10", "padding-top": "10"}),
 
-    html.Div([html.H2("COMPARED TO TEMPERATURE")],
-             style={'textAlign': "center", "padding-bottom": "10", "padding-top": "10"}),
+        html.Div(
+            className='row background',
+            style={'backgroundColor': "lightgrey"},
+            children=[
+                html.Div(
+                    [
+                        dcc.Graph(
+                            className='ten columns offset-by-one',
+                            id='main-graph',
+                            figure=go.Figure(
+                                data=main_chart_data,
+                                layout=main_plot_layout
+                            ),
+                            config={"displaylogo": False},
+                            hoverData={'points': [{'x': 70.32895833395834, 'y': '2018-09-13T00:00:00', 'z': 67944.64000000001,
+                                                   'curveNumber': 0, 'pointNumber': 436, 'customdata': '2018-09-13T00:00:00'}]}
+                        )
+                    ]
+                ),
 
-    html.Div(children='''
-        Dash: A web application framework for Python.
-    '''),
-    dcc.Graph(
-        id='example-graph',
-        figure=go.Figure(
-            data=data,
-            layout=plot_layout
+            ]
         ),
-        style={
-            'height': '10%',
-            'backgroundColor': "grey"
-        }
-    )
-])
+        html.Div([html.H4(" usage every half hour (in kW) for date : - "), html.H4(id='dateforsubgraph', )],
+                 style={'backgroundColor': "grey", 'height': '5%', "color": "white",
+                        'display': 'flex', 'justifyContent': "center",
+                        'text-align': "center", "padding-bottom": "10", "padding-top": "10"},
+                 className="row"
+                 ),
 
+        html.Div(
+            style={'background-color': "lightgrey", "width": "100%"},
+            children=[
+                dcc.Graph(
+                    style={'backgroundColor': "lightgrey", "width": "100%"},
+                    className='ten columns',
+                    id='sub-graph',
+                    config={
+                        'displayModeBar': False
+                    }
+                )
+            ]),
+
+    ])
+
+
+def update_subgraph(hoverData):
+    date_hovered = hoverData['points'][0]['customdata'][:10]
+
+    specific_day_data = DataFeatures.base_time_data[DataFeatures.base_time_data['just_date']
+                                                    == date_hovered]
+
+    maxUsage = DataFeatures.base_time_data.electricity_usage.max()
+
+    sub_plot_layout = dict(
+        font={"size": 8, "color": "white"},
+        margin=dict(l=0, r=0, b=0, t=0),
+        plot_bgcolor="lightgrey",
+        paper_bgcolor="lightgrey",
+        height=150,
+        hoverlabel=dict(
+            bordercolor='white'
+        ),
+        yaxis=dict(
+            range=[
+                maxUsage*1.1, 0
+            ],
+        ),
+    )
+
+    sub_chart_energy_data = {
+        "name": "",
+        "type": "bar",
+        "x": list(specific_day_data.just_time),
+        "y": list(specific_day_data.electricity_usage),
+        "text": list(specific_day_data.just_time),
+        "marker": {
+            'color': list(specific_day_data.out_door_temp),
+            'colorscale': [[0.0, "rgb(20, 20, 20)"],
+                           [0.5,  '#801D16'],
+                           [1.0,  '#FF392B']],
+            "cauto": False,
+            "cmin": 35,
+            "showscale": True
+        },
+        "hovertext": list(specific_day_data.out_door_temp),
+        "hovertemplate": '<b>%{x}</b>  ' + '<br>%{y} kW <br>' + '%{hovertext} F',
+        "textposition": "inside",
+        "textfont": {
+            "color": "white"
+        },
+        "insidetextfont": {
+            "color": "white"
+        },
+        "insidetextanchor": "start",
+        "cliponaxis": "true",
+    }
+
+    return {
+        'data': [sub_chart_energy_data],
+        'layout': sub_plot_layout
+    }, date_hovered
+
+
+@dash_app.callback([Output('sub-graph', 'figure'), Output('dateforsubgraph', 'children')],
+                   [Input('main-graph', 'hoverData')])
+def update_subgraph_onHover(inputData):
+    output1, output2 = update_subgraph(inputData)
+    return output1, output2
 
 if __name__ == "__main__":
     dash_app.run_server(debug=True)
-
-
-# @app.route("/<int:bars_count>/")
-# def chart(bars_count):
-#     if bars_count <= 0:
-#         bars_count = 1
-
-#     return render_template("chart.html", bars_count=bars_count)
-
-
-# import dash
-# from dash.dependencies import Input, Output
-# import dash_core_components as dcc
-# import dash_html_components as html
-
-# from pandas_datareader import data as web
-# from datetime import datetime as dt
-
-# app = dash.Dash('Hello World')
-
-# app.layout = html.Div([
-#     dcc.Dropdown(
-#         id='my-dropdown',
-#         options=[
-#             {'label': 'Coke', 'value': 'COKE'},
-#             {'label': 'Tesla', 'value': 'TSLA'},
-#             {'label': 'Apple', 'value': 'AAPL'}
-#         ],
-#         value='COKE'
-#     ),
-#     dcc.Graph(id='my-graph')
-# ], style={'width': '500'})
-
-# @app.callback(Output('my-graph', 'figure'), [Input('my-dropdown', 'value')])
-# def update_graph(selected_dropdown_value):
-#     df = web.DataReader(
-#         selected_dropdown_value,
-#         'google',
-#         dt(2017, 1, 1),
-#         dt.now()
-#     )
-#     return {
-#         'data': [{
-#             'x': df.index,
-#             'y': df.Close
-#         }],
-#         'layout': {'margin': {'l': 40, 'r': 0, 't': 20, 'b': 30}}
-#     }
-
-# app.css.append_css({'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})
-
-# if __name__ == '__main__':
-#     app.run_server()

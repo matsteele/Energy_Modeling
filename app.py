@@ -9,6 +9,7 @@ import plotly.graph_objs as go
 from make_features import DFFeatures
 
 app = dash.Dash(__name__)
+server = app.server
 
 app.title = "PD Challenge"
 

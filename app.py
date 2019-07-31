@@ -19,7 +19,6 @@ df = pd.read_csv('PD_challange_data_set.csv')
 DataFeatures = DFFeatures(df)
 
 def build_weekday_scatter():
-    # print(DataFeatures.weekday_DF.keys())
     df = DataFeatures.weekday_DF
     return {
         "name": "weekday total daily usage",

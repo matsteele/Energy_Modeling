@@ -2,18 +2,25 @@
 This app shows energy usage over time for a building. 
 
 # starting the project up 
+
+
+
 1) start virtual environment
 ```bash
 source venv/bin/activate
 ```
+
 2) install dependencies 
 ```bash
  pip install -r requirements.txt
 ```
+Make sure you are using python3. If errors are received in installing dependencies, try pip3 instead of pip.
+
 3) start server
 ```bash
 python app.py
 ```
+
 4) navigate to browser and input the link indicated in terminal
 
 

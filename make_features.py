@@ -2,7 +2,7 @@ import pandas as pd
 import datetime as dt
 import sklearn
 from sklearn.linear_model import LinearRegression
-# 
+
 
 class DFFeatures:
     def __init__(self, df):
@@ -142,7 +142,6 @@ class DFFeatures:
               X, y, test_size=0.3, random_state=42)
         linreg.fit(X_train, y_train)
         y_pred = linreg.predict(X_test)
-        print(linreg.score(X_test, y_test))
 
         day_data_with_expected_usage_noNA['predictions'] = linreg.predict(X)
         

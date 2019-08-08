@@ -78,7 +78,7 @@ I prefer to use json over dicts when using web structures, because that's the do
 # issues 
 
 ## hovering vs clicking callback 
-I got cought up trying to figure out how to click and have the temperature over time, by-day, remain if clicked, despite the hover callback, but the dash functionality seems unable to manage both callbacks. No examples appeared to have solved this problem. The callback doesn't allow you to take in the output feature and all global variables are ignored under the decorator. The suggested work arounds seemed to hacky to consider. 
+I got cought up trying to figure out how to click and have the temperature over time, by-day, remain if clicked, despite the hover callback, but the dash functionality seems unable to manage both callbacks. No examples appeared to have solved this problem. The callback doesn't allow you to take in the output feature and all global variables are ignored under the decorator. The suggested work arounds seemed too hacky to consider. 
 
 ## note
 While I appreciated how dash abstracts away much of the styling, if I were building something for a client, I would take the time to custom build my visualizations in React to ensure I have complete control over each aspect of the visualization. I found myself hunting through the documentation for specific key value pairs, and settling on whatever Dash optionality was available, rather than building everything to the design spec I had hoped for. 

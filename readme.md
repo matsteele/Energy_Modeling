@@ -1,6 +1,8 @@
 # about this app
 This app shows energy usage over time for a building. 
 
+[site is hosted on heroku through this link ](https://pd-challenge-steele.herokuapp.com) 
+
 # starting the project up 
 
 

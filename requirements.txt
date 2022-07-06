@@ -19,7 +19,7 @@ idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
 joblib==0.13.2
-lxml==4.3.4
+lxml==4.9.1
 MarkupSafe==1.1.0
 numpy==1.16.4
 packaging==19.0
